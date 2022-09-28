@@ -1,0 +1,146 @@
+---
+title: "615HW2"
+date: "2022-09-26"
+output:
+  pdf_document: default
+  
+  'df_document: null': default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Fuel Economy
+##1
+```{r}
+library(ggplot2)
+setwd("~/Downloads")
+vehicles <- read.csv('vehicles.csv')
+vehicles$phevBlended <- as.logical(vehicles$phevBlended)
+v1 <- subset(vehicles,select=c("fuelCost08","make","mpgData","year","phevBlended","city08","highway08"))
+v2 <- subset(v1,phevBlended == FALSE)
+summary(v2)
+ggplot(data = v2,aes(x=year,y=fuelCost08))+
+  geom_point(color="black",pch=20,size=2)+
+  geom_smooth(color="orange",method = 'gam')+
+  labs(
+    x="40 year span 1984 through 2023",
+    y="Annual fuel cost",
+    title=" Change of annual fuel cost over 40 years "
+  )
+
+```
+
+##2
+```{r}
+v3 <- subset(v1,make==c("Ferrari","Toyota","Volvo","Audi"))
+ggplot(data=v3,aes(x=year,y=city08,group=make,color=make))+
+  geom_line(size=2)+
+  labs(
+    x="40 year span 1984 through 2023",
+    y="citympg",
+    title="Change of citympg over 40 years"
+  )
+```
+```{r}
+ggplot(data=v3,aes(x=year,y=highway08,group=make,color=make))+
+  geom_line(size=2)+
+  labs(
+    x="40 year span 1984 through 2023",
+    y="highwaympg",
+    title="Change of highwaympg over 40 years"
+  )
+
+```
+Among the selected makes, Toyota is the one which has made the great progress. 
+
+## NASDAQ Composite
+```{r}
+setwd("~/Downloads")
+IXIC2122 <- read.csv('IXIC21-22.csv')
+library(ggplot2)
+library(tidyverse)
+library(tidyquant)
+tq_get_options()
+ggplot(data=IXIC2122,aes(x = Date, y =  Close)) +
+geom_candlestick(aes(open = Open, high = High, low = Low, close = Close)) +
+labs(title = "NASDAQ Candlestick Chart", y = "Close", x = "Date") +
+theme_tq()
+
+```
+
+
+## Rural Capacity Index
+##1
+```{r}
+setwd("~/Downloads")
+rci <- read.csv('ruralCapacityData.csv')
+rci1 <- subset(rci,County !="Bernalillo County")
+ggplot(data=rci1,aes(x=per_fam_below_pov,y=cap_index))+
+  geom_point(color="purple",pch=20,size=3)+
+  geom_smooth(method = 'loess',formula="y~x",span=0.5)+
+  labs(
+    x="Percentage of families below the poverty level",
+    y="Rural Capacity Index",
+    title="RCI - Percentage of families below the poverty level")
+
+```
+Explanation: Relationship between RCI and percentage of families below the poverty level. 
+
+##2
+```{r}
+ggplot(data=rci1,aes(x=per_over_25_with_bach,y=cap_index))+
+  geom_point(color="blue",alpha=0.5,pch=20,size=3)+labs(
+    x="Percent of population 25 and over with a bachelors degree",
+    y="Rural Capacity Index",
+    title="Number of houses with broadband - per_over_25_with_bach"
+  )
+```
+Explanation:A scatter plot indicating the relationship between the number of houses with broadband and the percent of adults, 25 and older, with bachelor degrees.
+
+
+##3-1
+```{r}
+rci_1 <- subset(rci1,pop_total<16000)
+ggplot(data=rci_1,aes(x=pop_total,y=cap_index))+
+  geom_point(color="red",pch=5,size=5)+
+  geom_smooth(method="loess",formula=y~x,span=0.4)+
+  labs(
+    x="Total population below 16k",
+    y="Rural Capacity Index",
+    title="Total population below 16k - Rural Capacity Index"
+  )
+```
+Explanation:Relationship between RCI and population for population below 16k.
+
+
+##3-2
+```{r}
+rci_2 <- subset(rci1,16000<pop_total & pop_total<55000)
+ggplot(data=rci_1,aes(x=pop_total,y=cap_index))+
+  geom_point(color="red",pch=5,size=5)+
+  geom_smooth(method="loess",formula=y~x,span=0.4)+
+  labs(
+    x="Total population between 16k and 55k",
+    y="Rural Capacity Index",
+    title="Total population between 16k and 55k - Rural Capacity Index"
+  )
+```
+Explanation:Relationship between RCI and population for population between 16k and 55k. 
+
+
+##3-3
+```{r}
+rci_3 <- subset(rci1,pop_total>55000)
+ggplot(data=rci_1,aes(x=pop_total,y=cap_index))+
+  geom_point(color="red",pch=5,size=5)+
+  geom_smooth(method="loess",formula=y~x,span=0.4)+
+  labs(
+    x="Total population above 55k",
+    y="Rural Capacity Index",
+    title="Total population above 55k - Rural Capacity Index"
+  )
+```
+
+Explanation:Relationship between RCI and population for population above 55k. 
